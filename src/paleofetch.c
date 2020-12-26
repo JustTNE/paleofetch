@@ -232,44 +232,6 @@ static char *get_uptime() {
     return uptime;
 }
 
-// returns "<Battery Percentage>% [<Charging | Discharging | Unknown>]"
-// Credit: allisio - https://gist.github.com/allisio/1e850b93c81150124c2634716fbc4815
-static char *get_battery_percentage() {
-  int battery_capacity;
-  FILE *capacity_file, *status_file;
-  char battery_status[12] = "Unknown";
-
-  if ((capacity_file = fopen(BATTERY_DIRECTORY "/capacity", "r")) == NULL) {
-    //status = ENOENT;
-    //halt_and_catch_fire("Unable to get battery information");
-
-    // Don't crash if no battery is found
-    static const char not_found[] = "Not found";
-    char *no_battery = malloc(sizeof(not_found));
-
-    strcpy(no_battery, not_found);
-    return no_battery;
-  }
-
-  fscanf(capacity_file, "%d", &battery_capacity);
-  fclose(capacity_file);
-
-  if ((status_file = fopen(BATTERY_DIRECTORY "/status", "r")) != NULL) {
-    fscanf(status_file, "%s", battery_status);
-    fclose(status_file);
-  }
-
-  // max length of resulting string is 19
-  // one byte for padding incase there is a newline
-  // 100% [Discharging]
-  // 1234567890123456789
-  char *battery = malloc(20);
-
-  snprintf(battery, 20, "%d%% [%s]", battery_capacity, battery_status);
-
-  return battery;
-}
-
 static char *get_packages(const char* dirname, const char* pacname, int num_extraneous) {
     int num_packages = 0;
     DIR * dirp;
